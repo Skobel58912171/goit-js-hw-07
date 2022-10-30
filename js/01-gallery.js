@@ -5,7 +5,7 @@ const galleryModal = document.querySelector(".gallery");
 console.log(galleryModal);
 
 galleryModal.addEventListener("click", modalOpen);
-galleryModal.addEventListener("keydown", modalClose);
+
 let instance;
 
 const markup = galleryItems
@@ -32,15 +32,27 @@ function modalOpen(evt) {
     return;
   }
   // console.log("click");
-  instance = basicLightbox.create(`
-    <img src="${evt.target.dataset.source}">
-`);
-  instance.show();
-}
+  instance = basicLightbox.create(
+    `<img src="${evt.target.dataset.source}">`,
 
-function modalClose(evt) {
-  if (evt.code !== "Escape") {
-    return;
+    {
+      onShow: (instance) => {
+        galleryModal.addEventListener("keydown", modalClose);
+      },
+
+      onClose: (instance) => {
+        galleryModal.removeEventListener("keydown", modalClose);
+      },
+    }
+  );
+  instance.show();
+
+  function modalClose(evt) {
+    if (evt.code !== "Escape") {
+      return;
+    }
+
+    instance.close();
+    console.log("vjh");
   }
-  instance.close();
 }
